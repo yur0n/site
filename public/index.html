@@ -95,6 +95,7 @@
 
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
   body {
     background: var(--bg);
     color: var(--ink);
@@ -795,6 +796,7 @@
       <a href="#experience">experience</a>
       <a href="#stack">stack</a>
       <a href="#contact">contact</a>
+      <button onclick="window.toggleTheme()" title="Toggle theme" style="background:none;border:none;cursor:pointer;color:var(--ink-muted);font-family:var(--mono);font-size:12px;padding:4px 8px;">⌘</button>
       <button id="palette-btn" title="Command palette">
         <span class="kbd">/</span>
       </button>
@@ -941,19 +943,19 @@
         </div>
         <div class="arrow">↗</div>
       </a>
-      <a class="contact-card" href="#" data-copy="CV_Yuri_Bilyk_Backend_Developer.pdf">
+      <a class="contact-card" href="/CV_Yuri_Bilyk_Backend_Developer.pdf" target="_blank" rel="noopener" data-copy="CV_Yuri_Bilyk_Backend_Developer.pdf">
         <div>
           <div class="label">CV</div>
           <div class="val">CV_Yuri_Bilyk_Backend_Developer.pdf</div>
         </div>
         <div class="arrow">↓</div>
       </a>
-      <a class="contact-card" href="#" onclick="window.toggleTheme();return false;">
+      <a class="contact-card" href="https://t.me/yur0n" target="_blank" rel="noopener">
         <div>
-          <div class="label">Theme</div>
-          <div class="val" id="theme-val">paper · rust</div>
+          <div class="label">Telegram</div>
+          <div class="val">@yur0n</div>
         </div>
-        <div class="arrow">⌘</div>
+        <div class="arrow">↗</div>
       </a>
     </div>
     <form class="form" id="contact-form" novalidate>
