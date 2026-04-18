@@ -1281,7 +1281,8 @@ function applyTweaks() {
   document.documentElement.dataset.accent = t.accent;
   document.body.classList.toggle('no-grain', !t.showGrain);
   document.body.classList.toggle('no-cosmos', !t.showCosmos);
-  document.getElementById('theme-val').textContent = `${t.theme} · ${t.accent}`;
+  const tv = document.getElementById('theme-val');
+  if (tv) tv.textContent = `${t.theme} · ${t.accent}`;
   // reflect in tweaks UI
   document.querySelectorAll('#t-theme .opt').forEach(b => b.classList.toggle('active', b.dataset.v === t.theme));
   document.querySelectorAll('#t-accent .opt').forEach(b => b.classList.toggle('active', b.dataset.v === t.accent));
