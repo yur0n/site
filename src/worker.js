@@ -36,7 +36,7 @@ async function handleContact(request, env) {
       body: JSON.stringify({ chat_id: env.WEBSITE_CHAT_ID, text }),
     });
     const data = await r.json();
-    return json({ ok: data.ok });
+    return json({ ok: data.ok }, data.ok ? 200 : 502);
   } catch {
     return json({ ok: false }, 500);
   }
