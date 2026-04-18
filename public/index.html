@@ -941,10 +941,10 @@
         </div>
         <div class="arrow">↗</div>
       </a>
-      <a class="contact-card" href="#" data-copy="cv2.pdf">
+      <a class="contact-card" href="#" data-copy="CV_Yuri_Bilyk_Backend_Developer.pdf">
         <div>
-          <div class="label">Resume</div>
-          <div class="val">cv.pdf</div>
+          <div class="label">CV</div>
+          <div class="val">CV_Yuri_Bilyk_Backend_Developer.pdf</div>
         </div>
         <div class="arrow">↓</div>
       </a>
@@ -959,7 +959,7 @@
     <form class="form" id="contact-form" novalidate>
       <div class="form-head">
         <span>// or send a message directly</span>
-        <span>POST /api/portfolio</span>
+        <span>POST send-message</span>
       </div>
       <div class="row2">
         <div class="field">
@@ -1339,11 +1339,11 @@ form.addEventListener('submit', async (e) => {
 
   submitBtn.disabled = true;
   submitBtn.textContent = 'sending…';
-  formStatus.textContent = 'posting /api/portfolio…';
+  formStatus.textContent = 'posting send-message…';
   formStatus.className = 'form-status';
 
   try {
-    const res = await fetch('https://yuron.dev/api/portfolio', {
+    const res = await fetch('/send-message', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -1439,7 +1439,7 @@ form.addEventListener('submit', async (e) => {
           print('PostgreSQL \u00b7 MySQL \u00b7 MongoDB \u00b7 Redis');
           print('AWS (Lambda, ECS, S3, SQS) \u00b7 Docker \u00b7 Kubernetes');
           print('RabbitMQ \u00b7 Stripe \u00b7 OAuth \u00b7 Sentry');
-        } else if (f === 'cv' || f === 'cv.pdf') {
+        } else if (f === 'cv' || f === 'CV_Yuri_Bilyk_Backend_Developer.pdf') {
           print('opening cv\u2026', 'ok');
           window.open('uploads/cv2.pdf', '_blank');
         } else if (!f) {
