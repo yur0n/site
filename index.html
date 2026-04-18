@@ -1,0 +1,1567 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Yuri Bilyk — Backend Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script>
+  // Tweakable defaults — host may rewrite this JSON block
+  window.TWEAKS = /*EDITMODE-BEGIN*/{
+    "theme": "terminal",
+    "accent": "indigo",
+    "showGrain": true,
+    "showCosmos": true
+  }/*EDITMODE-END*/;
+  // Restore persisted runtime state (dark mode, active section) without touching the JSON block
+  try {
+    const rt = JSON.parse(localStorage.getItem('yuron_state') || '{}');
+    window.__RUNTIME = rt;
+  } catch(e) { window.__RUNTIME = {}; }
+</script>
+
+<style>
+  :root {
+    --bg: #f3ede1;
+    --bg-2: #ebe3d2;
+    --ink: #1b1a17;
+    --ink-soft: #3c392f;
+    --ink-muted: #6b6558;
+    --rule: #cfc6b3;
+    --rule-soft: #dcd4c1;
+    --accent: #b8543a;         /* rust */
+    --accent-soft: #e4c6b6;
+    --card: #faf5e9;
+    --shadow: 0 1px 0 rgba(27,26,23,0.04), 0 8px 24px -12px rgba(27,26,23,0.12);
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+    --sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --serif: 'Instrument Serif', 'Times New Roman', serif;
+  }
+
+  [data-accent="ink"]    { --accent: #1b1a17; --accent-soft: #d6d1c2; }
+  [data-accent="rust"]   { --accent: #b8543a; --accent-soft: #e4c6b6; }
+  [data-accent="moss"]   { --accent: #5a6e3f; --accent-soft: #cdd5bb; }
+  [data-accent="indigo"] { --accent: #3b4a7a; --accent-soft: #c4c9dd; }
+
+  /* Terminal theme */
+  [data-theme="terminal"] {
+    --bg: #0d0e0c;
+    --bg-2: #141613;
+    --ink: #d7d4c8;
+    --ink-soft: #b8b3a3;
+    --ink-muted: #7a7668;
+    --rule: #242520;
+    --rule-soft: #1c1d19;
+    --card: #131411;
+    --shadow: 0 0 0 1px #1f201c, 0 8px 24px -12px rgba(0,0,0,0.6);
+  }
+  [data-theme="terminal"][data-accent="rust"]   { --accent: #e07a4a; --accent-soft: #3d241a; }
+  [data-theme="terminal"][data-accent="moss"]   { --accent: #9dbd6a; --accent-soft: #1e2a14; }
+  [data-theme="terminal"][data-accent="indigo"] { --accent: #8ea0d4; --accent-soft: #1a1f2f; }
+  [data-theme="terminal"][data-accent="ink"]    { --accent: #d7d4c8; --accent-soft: #2a2b26; }
+
+  /* Cosmos theme — deep midnight */
+  [data-theme="cosmos"] {
+    --bg: #0a0c18;
+    --bg-2: #10132a;
+    --ink: #e8e3d0;
+    --ink-soft: #c0bca8;
+    --ink-muted: #7a7a92;
+    --rule: #242846;
+    --rule-soft: #1a1d35;
+    --card: #0f1227;
+    --shadow: 0 0 0 1px #1a1d35, 0 12px 32px -12px rgba(0,0,0,0.7);
+  }
+  [data-theme="cosmos"][data-accent="rust"]   { --accent: #e8a567; --accent-soft: #3a2817; }
+  [data-theme="cosmos"][data-accent="moss"]   { --accent: #a8c088; --accent-soft: #1f2a18; }
+  [data-theme="cosmos"][data-accent="indigo"] { --accent: #a8b5e8; --accent-soft: #1a1f3a; }
+  [data-theme="cosmos"][data-accent="ink"]    { --accent: #e8e3d0; --accent-soft: #2a2d4a; }
+
+  /* Brutalist theme */
+  [data-theme="brutal"] {
+    --bg: #efefe9;
+    --bg-2: #ffffff;
+    --ink: #000000;
+    --ink-soft: #111111;
+    --ink-muted: #555555;
+    --rule: #000000;
+    --rule-soft: #000000;
+    --card: #ffffff;
+    --shadow: 4px 4px 0 #000;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    letter-spacing: -0.005em;
+  }
+
+  /* Cosmos layer — starfield + moon */
+  .cosmos {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    overflow: hidden;
+  }
+  body.no-cosmos .cosmos { display: none; }
+  .cosmos .stars {
+    position: absolute; inset: -10%;
+    background-image:
+      radial-gradient(1px 1px at 12% 18%, currentColor 60%, transparent 100%),
+      radial-gradient(1px 1px at 34% 62%, currentColor 60%, transparent 100%),
+      radial-gradient(1px 1px at 58% 28%, currentColor 50%, transparent 100%),
+      radial-gradient(1.2px 1.2px at 82% 74%, currentColor 60%, transparent 100%),
+      radial-gradient(1px 1px at 44% 88%, currentColor 55%, transparent 100%),
+      radial-gradient(0.8px 0.8px at 72% 12%, currentColor 60%, transparent 100%),
+      radial-gradient(1.2px 1.2px at 24% 46%, currentColor 55%, transparent 100%),
+      radial-gradient(0.8px 0.8px at 92% 40%, currentColor 50%, transparent 100%),
+      radial-gradient(1px 1px at 6% 74%, currentColor 55%, transparent 100%),
+      radial-gradient(1px 1px at 66% 56%, currentColor 60%, transparent 100%),
+      radial-gradient(0.9px 0.9px at 50% 6%, currentColor 55%, transparent 100%),
+      radial-gradient(1.1px 1.1px at 18% 92%, currentColor 55%, transparent 100%);
+    color: var(--ink);
+    opacity: 0.18;
+  }
+  [data-theme="cosmos"] .cosmos .stars { opacity: 0.75; }
+  [data-theme="terminal"] .cosmos .stars { opacity: 0.35; }
+  .cosmos .stars.layer-2 {
+    background-size: 320px 320px;
+    animation: drift 120s linear infinite;
+    opacity: 0.35;
+  }
+  [data-theme="cosmos"] .cosmos .stars.layer-2 { opacity: 0.9; }
+  .cosmos .stars.layer-3 {
+    animation: twinkle 5s ease-in-out infinite;
+  }
+  @keyframes drift {
+    from { transform: translate(0,0); }
+    to   { transform: translate(-80px, -40px); }
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.18; }
+    50%      { opacity: 0.32; }
+  }
+  [data-theme="cosmos"] .cosmos .stars.layer-3 { animation-name: twinkle-cosmos; }
+  @keyframes twinkle-cosmos {
+    0%, 100% { opacity: 0.7; }
+    50%      { opacity: 1; }
+  }
+
+  /* Background moon — full viewport */
+  .bg-moon {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image: url('https://images-assets.nasa.gov/image/art002e009287/art002e009287~large.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  [data-theme="terminal"] .bg-moon { opacity: 0.35; mix-blend-mode: screen; filter: contrast(1.05) brightness(0.85); }
+  [data-theme="cosmos"]   .bg-moon { opacity: 0.55; mix-blend-mode: screen; filter: contrast(1.05); }
+  [data-theme="paper"]    .bg-moon { opacity: 0.18; mix-blend-mode: multiply; filter: contrast(1.1) sepia(0.3); }
+  [data-theme="brutal"]   .bg-moon { display: none; }
+
+  /* Dark gradient overlay so text stays readable */
+  .bg-moon::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg,
+      color-mix(in oklab, var(--bg) 55%, transparent) 0%,
+      color-mix(in oklab, var(--bg) 35%, transparent) 45%,
+      color-mix(in oklab, var(--bg) 80%, transparent) 100%);
+  }
+  [data-theme="paper"] .bg-moon::after {
+    background: linear-gradient(180deg,
+      color-mix(in oklab, var(--bg) 70%, transparent) 0%,
+      color-mix(in oklab, var(--bg) 50%, transparent) 50%,
+      color-mix(in oklab, var(--bg) 85%, transparent) 100%);
+  }
+
+  body.no-cosmos .bg-moon { display: none; }
+
+  /* Ensure shell renders above cosmos */
+  .shell { position: relative; z-index: 1; }
+  .topbar, .hero, .blk, .foot { position: relative; }
+
+  /* Grain overlay */
+  .grain {
+    position: fixed; inset: 0; pointer-events: none; z-index: 100;
+    opacity: 0.35;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.1  0 0 0 0 0.1  0 0 0 0 0.1  0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  [data-theme="terminal"] .grain { mix-blend-mode: screen; opacity: 0.25; }
+  .no-grain .grain { display: none; }
+
+  /* Layout */
+  .shell {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 56px 40px 120px;
+    position: relative;
+  }
+  @media (max-width: 640px) { .shell { padding: 32px 22px 80px; } }
+
+  /* Top bar */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-muted);
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--rule-soft);
+    margin-bottom: 56px;
+  }
+  .topbar .left { display:flex; align-items:center; gap:14px; }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 20%, transparent);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 20%, transparent); }
+    50% { box-shadow: 0 0 0 6px color-mix(in oklab, var(--accent) 10%, transparent); }
+  }
+  .topbar .right { display:flex; gap: 18px; align-items: center; }
+  .topbar a, .topbar button {
+    font: inherit; color: var(--ink-muted); background: none; border: 0; cursor: pointer;
+    padding: 0; text-decoration: none;
+    transition: color .15s ease;
+  }
+  .topbar a:hover, .topbar button:hover { color: var(--accent); }
+  .kbd {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    padding: 2px 6px;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    color: var(--ink-muted);
+    background: var(--bg-2);
+  }
+  [data-theme="brutal"] .kbd { border-radius: 0; border-width: 1.5px; }
+
+  /* Hero */
+  .hero { margin-bottom: 72px; }
+  .hero .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-muted);
+    letter-spacing: 0.02em;
+    margin-bottom: 20px;
+    display: flex; align-items: baseline; gap: 12px;
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(44px, 7vw, 82px);
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+    margin: 0 0 24px;
+    color: var(--ink);
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  [data-theme="terminal"] .hero h1 { font-family: var(--mono); font-size: clamp(32px, 5vw, 56px); font-weight: 500; letter-spacing: -0.02em;}
+  [data-theme="terminal"] .hero h1 em { font-style: normal; }
+  [data-theme="brutal"] .hero h1 { font-family: var(--sans); font-weight: 800; letter-spacing: -0.04em; }
+  [data-theme="brutal"] .hero h1 em { font-style: normal; }
+
+  .hero p.lede {
+    font-family: var(--sans);
+    font-size: 18px;
+    line-height: 1.55;
+    max-width: 58ch;
+    color: var(--ink-soft);
+    margin: 0 0 32px;
+    text-wrap: pretty;
+  }
+  [data-theme="terminal"] .hero p.lede { font-family: var(--mono); font-size: 14.5px; }
+
+  .hero-meta {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    padding-top: 28px;
+    border-top: 1px solid var(--rule-soft);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  @media (max-width: 640px) { .hero-meta { grid-template-columns: repeat(2, 1fr); } }
+  .meta-item .label { color: var(--ink-muted); margin-bottom: 4px; text-transform: uppercase; font-size: 10.5px; letter-spacing: 0.08em; }
+  .meta-item .val { color: var(--ink); font-size: 13px; }
+  .meta-item .val.accent { color: var(--accent); }
+
+  /* Section */
+  section.blk { margin: 72px 0; }
+  .sec-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 32px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .sec-head h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 32px;
+    letter-spacing: -0.015em;
+    margin: 0;
+  }
+  [data-theme="terminal"] .sec-head h2 { font-family: var(--mono); font-size: 22px; font-weight: 500; }
+  [data-theme="terminal"] .sec-head h2::before { content: '## '; color: var(--ink-muted); }
+  [data-theme="brutal"] .sec-head h2 { font-family: var(--sans); font-weight: 800; text-transform: uppercase; font-size: 22px; letter-spacing: 0.02em; }
+  .sec-head .num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-muted);
+    letter-spacing: 0.1em;
+  }
+
+  /* About */
+  .about p {
+    font-size: 17px;
+    line-height: 1.65;
+    max-width: 62ch;
+    color: var(--ink-soft);
+    margin: 0 0 16px;
+    text-wrap: pretty;
+  }
+  .about p:last-child { margin-bottom: 0; }
+  .about .hl { color: var(--accent); font-style: italic; }
+  [data-theme="terminal"] .about p { font-family: var(--mono); font-size: 14px; }
+  [data-theme="terminal"] .about .hl { font-style: normal; }
+
+  /* Experience timeline */
+  .timeline { display: flex; flex-direction: column; }
+  .job {
+    display: grid;
+    grid-template-columns: 140px 1fr auto;
+    gap: 28px;
+    padding: 24px 0;
+    border-bottom: 1px dashed var(--rule-soft);
+    cursor: pointer;
+    position: relative;
+    transition: background .2s ease;
+  }
+  [data-theme="brutal"] .job { border-bottom: 2px solid var(--rule); }
+  .job:last-child { border-bottom: 0; }
+  .job:hover { background: color-mix(in oklab, var(--accent) 4%, transparent); }
+  .job .when {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-muted);
+    padding-top: 3px;
+  }
+  .job .body .co {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  [data-theme="terminal"] .job .body .co { font-family: var(--mono); font-size: 15px; }
+  .job .body .role {
+    font-size: 14px;
+    color: var(--ink-muted);
+    margin-bottom: 12px;
+  }
+  .job .body .role .tag {
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .job .body ul {
+    margin: 0; padding: 0; list-style: none;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .35s ease, margin-top .35s ease;
+  }
+  .job.open .body ul {
+    max-height: 600px;
+    margin-top: 4px;
+  }
+  .job .body li {
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    padding: 4px 0 4px 18px;
+    position: relative;
+    line-height: 1.55;
+  }
+  .job .body li::before {
+    content: '→';
+    position: absolute; left: 0;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 12px;
+    top: 5px;
+  }
+  .job .body .stack {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--ink-muted);
+    margin-top: 10px;
+    padding-left: 18px;
+    display: none;
+  }
+  .job.open .body .stack { display: block; }
+  .job .chev {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--ink-muted);
+    padding-top: 3px;
+    transition: transform .25s ease;
+  }
+  .job.open .chev { transform: rotate(90deg); color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .job { grid-template-columns: 1fr auto; }
+    .job .when { grid-column: 1 / -1; margin-bottom: -8px; }
+  }
+
+  /* Stack grid */
+  .stack-grid {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 18px 28px;
+  }
+  @media (max-width: 640px) { .stack-grid { grid-template-columns: 1fr; gap: 4px 0; } }
+  .stack-grid dt {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-top: 6px;
+  }
+  .stack-grid dd {
+    margin: 0;
+    padding: 0 0 16px 0;
+    border-bottom: 1px solid var(--rule-soft);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 8px;
+  }
+  .stack-grid dd:last-of-type { border-bottom: 0; }
+  .chip {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink);
+    padding: 2px 8px;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--card);
+    transition: all .15s ease;
+    cursor: default;
+  }
+  [data-theme="brutal"] .chip { border-radius: 0; border-width: 1.5px; }
+  .chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translate(-1px, -1px);
+  }
+  .chip.minor { color: var(--ink-muted); background: transparent; border-style: dashed; }
+
+  /* Contact */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  @media (max-width: 640px) { .contact-grid { grid-template-columns: 1fr; } }
+  .contact-card {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding: 20px 22px;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    background: var(--card);
+    text-decoration: none;
+    color: var(--ink);
+    transition: all .2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  [data-theme="brutal"] .contact-card { border-radius: 0; border-width: 1.5px; box-shadow: var(--shadow); }
+  [data-theme="brutal"] .contact-card:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 #000; }
+  .contact-card:not([data-theme="brutal"]):hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .contact-card .label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+  .contact-card .val {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .contact-card .arrow {
+    font-family: var(--mono);
+    color: var(--ink-muted);
+    transition: all .2s ease;
+  }
+  .contact-card:hover .arrow { color: var(--accent); transform: translate(3px, -3px); }
+
+  /* Contact form */
+  .form {
+    margin-top: 36px;
+    padding: 28px;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    background: var(--card);
+  }
+  [data-theme="brutal"] .form { border-radius: 0; border-width: 1.5px; box-shadow: var(--shadow); }
+  .form-head {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 18px;
+    display: flex; justify-content: space-between;
+  }
+  .form .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width: 640px) { .form .row2 { grid-template-columns: 1fr; } }
+  .field { display: flex; flex-direction: column; }
+  .field label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+  .field input, .field textarea {
+    font: inherit;
+    font-family: var(--mono);
+    font-size: 14px;
+    padding: 10px 12px;
+    background: var(--bg);
+    color: var(--ink);
+    border: 1px solid var(--rule);
+    border-radius: 5px;
+    outline: 0;
+    transition: border-color .15s ease, box-shadow .15s ease;
+    resize: vertical;
+  }
+  [data-theme="brutal"] .field input, [data-theme="brutal"] .field textarea { border-radius: 0; border-width: 1.5px; }
+  .field textarea { min-height: 120px; }
+  .field input:focus, .field textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 20%, transparent);
+  }
+  .field .err { color: #d9644a; font-family: var(--mono); font-size: 11px; margin-top: 4px; min-height: 14px; }
+  .form-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+  .form-status { font-family: var(--mono); font-size: 12px; color: var(--ink-muted); }
+  .form-status.ok { color: color-mix(in oklab, var(--accent) 80%, var(--ink)); }
+  .form-status.err { color: #d9644a; }
+  button.submit {
+    font: inherit;
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 10px 20px;
+    background: var(--accent);
+    color: var(--bg);
+    border: 1px solid var(--accent);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform .15s ease, opacity .15s ease;
+  }
+  [data-theme="brutal"] button.submit { border-radius: 0; border-width: 1.5px; border-color: #000; background: #000; color: #fff; }
+  [data-theme="brutal"] button.submit:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--accent); }
+  button.submit:hover:not(:disabled) { transform: translateY(-1px); }
+  button.submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Terminal dock */
+  .term-dock {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 180;
+    background: var(--bg);
+    border-top: 1px solid var(--rule);
+    box-shadow: 0 -8px 24px -12px rgba(0,0,0,0.4);
+    transform: translateY(calc(100% - 34px));
+    transition: transform .25s ease;
+    font-family: var(--mono);
+    display: flex; flex-direction: column;
+    max-height: 60vh;
+  }
+  .term-dock.open { transform: translateY(0); }
+  [data-theme="brutal"] .term-dock { border-top-width: 2px; }
+
+  .term-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 14px;
+    font-size: 11px;
+    color: var(--ink-muted);
+    border-bottom: 1px solid var(--rule-soft);
+    cursor: pointer;
+    user-select: none;
+    flex-shrink: 0;
+    height: 34px;
+  }
+  .term-bar .left { display: flex; align-items: center; gap: 10px; }
+  .term-bar .lights { display: flex; gap: 6px; }
+  .term-bar .lights span { width: 10px; height: 10px; border-radius: 50%; background: var(--rule); }
+  .term-bar .lights span:nth-child(1) { background: #e27070; }
+  .term-bar .lights span:nth-child(2) { background: #e5b968; }
+  .term-bar .lights span:nth-child(3) { background: #7ab874; }
+  .term-bar .title { color: var(--ink-soft); }
+  .term-bar .hint { opacity: 0.7; }
+
+  .term-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 18px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .term-line { white-space: pre-wrap; word-break: break-word; }
+  .term-line.in { color: var(--ink); }
+  .term-line.err { color: #d9644a; }
+  .term-line.ok { color: color-mix(in oklab, var(--accent) 70%, var(--ink)); }
+  .term-line.dim { color: var(--ink-muted); }
+  .term-line .prompt { color: var(--accent); }
+  .term-link { color: var(--accent); text-decoration: underline; cursor: pointer; }
+
+  .term-input-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 18px 14px;
+    border-top: 1px solid var(--rule-soft);
+    flex-shrink: 0;
+  }
+  .term-prompt { color: var(--accent); font-size: 13px; }
+  .term-input {
+    flex: 1;
+    background: transparent;
+    border: 0; outline: 0;
+    color: var(--ink);
+    font: inherit;
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 0;
+    caret-color: var(--accent);
+  }
+
+  body { padding-bottom: 34px; }
+
+  /* Footer */
+  footer.foot {
+    border-top: 1px solid var(--rule-soft);
+    display: flex; justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-muted);
+  }
+
+  /* Command palette */
+  .palette-backdrop {
+    position: fixed; inset: 0; background: rgba(27,26,23,0.35);
+    backdrop-filter: blur(4px);
+    display: none; align-items: flex-start; justify-content: center;
+    z-index: 200;
+    padding-top: 12vh;
+  }
+  [data-theme="terminal"] .palette-backdrop { background: rgba(0,0,0,0.6); }
+  .palette-backdrop.on { display: flex; animation: fadein .15s ease; }
+  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+  .palette {
+    width: min(560px, calc(100vw - 40px));
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    box-shadow: 0 20px 60px -20px rgba(0,0,0,0.4);
+    overflow: hidden;
+    font-family: var(--mono);
+  }
+  [data-theme="brutal"] .palette { border-radius: 0; border-width: 2px; box-shadow: 6px 6px 0 #000; }
+  .palette input {
+    width: 100%;
+    padding: 18px 20px;
+    border: 0;
+    outline: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 14px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .palette .results { max-height: 320px; overflow-y: auto; }
+  .palette .item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 11px 20px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    border-left: 2px solid transparent;
+  }
+  .palette .item.active { background: color-mix(in oklab, var(--accent) 10%, transparent); color: var(--ink); border-left-color: var(--accent); }
+  .palette .item .k { color: var(--ink-muted); font-size: 11px; }
+  .palette .hint {
+    padding: 10px 20px;
+    font-size: 10.5px;
+    color: var(--ink-muted);
+    border-top: 1px solid var(--rule-soft);
+    background: var(--bg-2);
+    display: flex; justify-content: space-between;
+  }
+
+  /* Tweaks panel */
+  .tweaks {
+    position: fixed; bottom: 24px; right: 24px;
+    width: 260px;
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    box-shadow: 0 12px 32px -12px rgba(0,0,0,0.25);
+    z-index: 150;
+    display: none;
+  }
+  .tweaks.on { display: block; }
+  .tweaks h4 { margin: 0 0 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-muted); font-weight: 600; }
+  .tweaks .row { margin-bottom: 12px; }
+  .tweaks .row:last-child { margin-bottom: 0; }
+  .tweaks label { display: block; color: var(--ink-muted); margin-bottom: 6px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .tweaks .opts { display: flex; gap: 4px; flex-wrap: wrap; }
+  .tweaks button.opt {
+    font: inherit; font-family: var(--mono); font-size: 11px;
+    padding: 5px 10px;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .tweaks button.opt.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  .tweaks button.opt:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+  .tweaks .swatch { width: 26px; height: 26px; padding: 0; border-radius: 50%; border: 2px solid var(--rule); cursor: pointer; background: var(--c); }
+  .tweaks .swatch.active { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .tweaks .toggle { display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: var(--ink-soft); }
+  .tweaks .switch { width: 28px; height: 16px; background: var(--rule); border-radius: 10px; position: relative; transition: background .2s; }
+  .tweaks .switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; background: var(--bg); border-radius: 50%; transition: transform .2s; }
+  .tweaks .toggle.on .switch { background: var(--accent); }
+  .tweaks .toggle.on .switch::after { transform: translateX(12px); }
+
+  /* Text selection */
+  ::selection { background: var(--accent); color: var(--bg); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--ink-muted); }
+</style>
+</head>
+<body>
+
+<div class="cosmos" aria-hidden="true">
+  <div class="stars layer-1"></div>
+  <div class="stars layer-2"></div>
+  <div class="stars layer-3"></div>
+  <div class="bg-moon" id="bg-moon"></div>
+</div>
+
+<div class="grain"></div>
+
+<div class="shell">
+
+  <div class="topbar">
+    <div class="left">
+      <span class="dot"></span>
+      <span id="status">available for contract work</span>
+    </div>
+    <div class="right">
+      <a href="#experience">experience</a>
+      <a href="#stack">stack</a>
+      <a href="#contact">contact</a>
+      <button id="palette-btn" title="Command palette">
+        <span class="kbd">/</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="eyebrow">
+      <span>Yuri Bilyk</span>
+      <span>·</span>
+      <span>Remote · EU</span>
+    </div>
+    <h1>Backend developer<br>building <em>scalable systems</em><br>that don't fall over.</h1>
+    <p class="lede">
+      Six years designing the quiet half of products — APIs, queues, databases, the parts users never see but always feel. Lately: Node / NestJS, AWS, PostgreSQL, and the occasional serverless adventure.
+    </p>
+    <div class="hero-meta">
+      <div class="meta-item"><div class="label">Based</div><div class="val">Remote · EU</div></div>
+      <div class="meta-item"><div class="label">Status</div><div class="val accent">Open to work</div></div>
+      <div class="meta-item"><div class="label">Years</div><div class="val">6+ commercial</div></div>
+      <div class="meta-item"><div class="label">Current</div><div class="val">IT Dev Group</div></div>
+    </div>
+  </header>
+
+  <!-- ABOUT -->
+  <section class="blk about" id="about">
+    <div class="sec-head">
+      <h2>About</h2>
+      <span class="num">/01</span>
+    </div>
+    <p>
+      I build the backends for retail platforms, trading systems, CRMs, and a handful of products that involve a lot of money moving carefully between places. My favourite problems are the boring-looking ones: <span class="hl">data consistency, query performance, order lifecycles</span> — the things that only get noticed when they break.
+    </p>
+    <p>
+      Before engineering I ran a YouTube channel with 70K subscribers and 100M total views. Turns out shipping videos on a schedule is decent preparation for shipping services on a schedule. Both require you to care about the thing nobody sees: the pipeline.
+    </p>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section class="blk" id="experience">
+    <div class="sec-head">
+      <h2>Experience</h2>
+      <span class="num">/02 — click to expand</span>
+    </div>
+    <div class="timeline" id="timeline"></div>
+  </section>
+
+  <!-- STACK -->
+  <section class="blk" id="stack">
+    <div class="sec-head">
+      <h2>Stack</h2>
+      <span class="num">/03</span>
+    </div>
+    <dl class="stack-grid">
+      <dt>Languages</dt>
+      <dd>
+        <span class="chip">TypeScript</span><span class="chip">JavaScript</span>
+        <span class="chip minor">Go</span><span class="chip minor">Python</span>
+      </dd>
+      <dt>Node</dt>
+      <dd>
+        <span class="chip">NestJS</span><span class="chip">Express</span>
+        <span class="chip">Fastify</span><span class="chip">Koa</span>
+      </dd>
+      <dt>Databases</dt>
+      <dd>
+        <span class="chip">PostgreSQL</span><span class="chip">MySQL</span>
+        <span class="chip">MongoDB</span><span class="chip">Redis</span>
+        <span class="chip minor">Elasticsearch</span><span class="chip minor">DynamoDB</span>
+        <span class="chip minor">Supabase</span><span class="chip minor">Firebase</span>
+      </dd>
+      <dt>ORM</dt>
+      <dd>
+        <span class="chip">Prisma</span><span class="chip">TypeORM</span>
+        <span class="chip">Sequelize</span><span class="chip">Mongoose</span>
+      </dd>
+      <dt>Cloud / infra</dt>
+      <dd>
+        <span class="chip">AWS</span><span class="chip">Lambda</span>
+        <span class="chip">ECS</span><span class="chip">Fargate</span>
+        <span class="chip">S3</span><span class="chip">SQS/SNS</span>
+        <span class="chip">DigitalOcean</span>
+        <span class="chip minor">Azure</span><span class="chip minor">GCP</span>
+      </dd>
+      <dt>Containers</dt>
+      <dd>
+        <span class="chip">Docker</span><span class="chip">Kubernetes</span>
+        <span class="chip">Docker Swarm</span><span class="chip">Dokploy</span>
+        <span class="chip">Coolify</span>
+      </dd>
+      <dt>CI / CD</dt>
+      <dd>
+        <span class="chip">GitLab CI</span><span class="chip">GitHub Actions</span>
+        <span class="chip minor">Jenkins</span>
+      </dd>
+      <dt>Messaging</dt>
+      <dd>
+        <span class="chip">RabbitMQ</span><span class="chip">WebSocket</span>
+        <span class="chip">SSE</span><span class="chip">Telegram Bot API</span>
+      </dd>
+      <dt>Monitoring</dt>
+      <dd>
+        <span class="chip">Sentry</span><span class="chip">New Relic</span>
+        <span class="chip">CloudWatch</span>
+      </dd>
+      <dt>Web servers</dt>
+      <dd>
+        <span class="chip">Nginx</span><span class="chip">Traefik</span>
+        <span class="chip">Caddy</span><span class="chip">API Gateway</span>
+      </dd>
+      <dt>Auth / misc</dt>
+      <dd>
+        <span class="chip">OAuth</span><span class="chip">JWT</span>
+        <span class="chip">Stripe</span><span class="chip">Jest</span>
+        <span class="chip">Swagger</span>
+      </dd>
+      <dt>Frontend</dt>
+      <dd>
+        <span class="chip">React</span><span class="chip">WebExtensions</span>
+        <span class="chip minor">Next.js</span><span class="chip minor">Vue</span>
+      </dd>
+    </dl>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="blk" id="contact">
+    <div class="sec-head">
+      <h2>Get in touch</h2>
+      <span class="num">/04</span>
+    </div>
+    <div class="contact-grid">
+      <a class="contact-card" href="mailto:me@yuron.dev">
+        <div>
+          <div class="label">Email</div>
+          <div class="val">me@yuron.dev</div>
+        </div>
+        <div class="arrow">↗</div>
+      </a>
+      <a class="contact-card" href="https://www.linkedin.com/in/yuri-bilyk/" target="_blank" rel="noopener">
+        <div>
+          <div class="label">LinkedIn</div>
+          <div class="val">in/yuri-bilyk</div>
+        </div>
+        <div class="arrow">↗</div>
+      </a>
+      <a class="contact-card" href="#" data-copy="cv2.pdf">
+        <div>
+          <div class="label">Resume</div>
+          <div class="val">cv.pdf</div>
+        </div>
+        <div class="arrow">↓</div>
+      </a>
+      <a class="contact-card" href="#" onclick="window.toggleTheme();return false;">
+        <div>
+          <div class="label">Theme</div>
+          <div class="val" id="theme-val">paper · rust</div>
+        </div>
+        <div class="arrow">⌘</div>
+      </a>
+    </div>
+    <form class="form" id="contact-form" novalidate>
+      <div class="form-head">
+        <span>// or send a message directly</span>
+        <span>POST /api/portfolio</span>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label for="f-email">your email</label>
+          <input type="email" id="f-email" name="email" placeholder="you@domain.com" autocomplete="email" required />
+          <div class="err" data-for="email"></div>
+        </div>
+        <div class="field">
+          <label for="f-subject">subject</label>
+          <input type="text" id="f-subject" name="subject" placeholder="what's it about?" required />
+          <div class="err" data-for="subject"></div>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom: 14px;">
+        <label for="f-message">message</label>
+        <textarea id="f-message" name="message" placeholder="tell me what you're working on…" required></textarea>
+        <div class="err" data-for="message"></div>
+      </div>
+      <div class="form-actions">
+        <span class="form-status" id="form-status">ready.</span>
+        <button type="submit" class="submit" id="submit-btn">send message →</button>
+      </div>
+    </form>
+  </section>
+
+  <footer class="foot">
+    <span>© 2026 Yuri Bilyk</span>
+    <span>English B2 · Ukrainian (Native)</span>
+  </footer>
+
+</div>
+
+<!-- Command palette -->
+<div class="palette-backdrop" id="palette">
+  <div class="palette">
+    <input type="text" id="palette-input" placeholder="Type a command or jump to a section…" autocomplete="off" spellcheck="false" />
+    <div class="results" id="palette-results"></div>
+    <div class="hint">
+      <span>↑↓ navigate · ↵ select · esc close</span>
+      <span>v1.0</span>
+    </div>
+  </div>
+</div>
+
+<!-- Tweaks panel (toolbar-controlled) -->
+<div class="tweaks" id="tweaks">
+  <h4>Tweaks</h4>
+  <div class="row">
+    <label>Theme</label>
+    <div class="opts" id="t-theme">
+      <button class="opt" data-v="paper">paper</button>
+      <button class="opt" data-v="cosmos">cosmos</button>
+      <button class="opt" data-v="terminal">terminal</button>
+      <button class="opt" data-v="brutal">brutal</button>
+    </div>
+  </div>
+  <div class="row">
+    <label>Accent</label>
+    <div class="opts" id="t-accent">
+      <button class="opt" data-v="rust">rust</button>
+      <button class="opt" data-v="moss">moss</button>
+      <button class="opt" data-v="indigo">indigo</button>
+      <button class="opt" data-v="ink">ink</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="toggle" id="t-cosmos" data-k="showCosmos">
+      <span>Stars & moon</span>
+      <span class="switch"></span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="toggle" id="t-grain" data-k="showGrain">
+      <span>Grain texture</span>
+      <span class="switch"></span>
+    </div>
+  </div>
+</div>
+
+<!-- Interactive terminal dock -->
+<div class="term-dock" id="term">
+  <div class="term-bar" id="term-bar">
+    <div class="left">
+      <div class="lights"><span></span><span></span><span></span></div>
+      <span class="title">~/yuron — zsh</span>
+    </div>
+    <span class="hint">press <span class="kbd">̀</span> to toggle · type <b>help</b></span>
+  </div>
+  <div class="term-body" id="term-body"></div>
+  <div class="term-input-row">
+    <span class="term-prompt">yuron@dev:~$</span>
+    <input type="text" id="term-input" class="term-input" autocomplete="off" spellcheck="false" />
+  </div>
+</div>
+
+<script>
+/* ------- DATA ------- */
+const JOBS = [
+  {
+    when: "Jul 2025 — Now",
+    co: "IT Dev Group",
+    role: "Backend Developer",
+    tag: "Retail & multi-channel sales platform",
+    bullets: [
+      "Large-scale backend handling orders, inventory, pricing, taxes, integrations",
+      "Business-critical logic for order lifecycle, synchronization, and data consistency across sources",
+      "Owned CI/CD pipelines across services"
+    ],
+    stack: "Express.js · MySQL · AWS Lambda · EC2 · Algolia · Stripe · Serverless Framework"
+  },
+  {
+    when: "Aug 2024 — Jul 2025",
+    co: "idevone",
+    role: "Backend Developer",
+    tag: "Three products: Web3 trading · CRM · AI chat",
+    bullets: [
+      "Web3 trading platform — scalable architecture, robust auth, Lambda for peak-traffic scaling",
+      "Microservices economic CRM for finances, advertising, and stats + Telegram/Jira features",
+      "Multi-assistant AI chat platform supporting seamless interactions across categories"
+    ],
+    stack: "NestJS · AWS · ElasticSearch · Redis · PostgreSQL · RabbitMQ · OpenAI · SSE"
+  },
+  {
+    when: "May 2023 — Jul 2024",
+    co: "Hexide Digital",
+    role: "Backend Developer",
+    tag: "Community monetization platform",
+    bullets: [
+      "Migrated platform from Express.js to NestJS for improved architecture",
+      "Rewrote database queries — reduced response times by up to 4×",
+      "Shipped new monetization features"
+    ],
+    stack: "NestJS · Express · WebSocket · Redis · Stripe · PostgreSQL"
+  },
+  {
+    when: "2021 — May 2023",
+    co: "CTS",
+    role: "Lead Developer",
+    tag: "Digital items trading app",
+    bullets: [
+      "Led from inception — owned vision, architecture, and development end-to-end",
+      "Built client accounts, payments, subscriptions, and authentication",
+      "Shipped browser extensions, websites, backend services, and Telegram bots",
+      "Implemented CI/CD to streamline development"
+    ],
+    stack: "NestJS · Docker Swarm · Redis · MongoDB · PostgreSQL · React · WebExtensions"
+  },
+  {
+    when: "2020 — 2021",
+    co: "Freelance",
+    role: "Backend / Full Stack",
+    tag: "YouTube analytics · parsing · extensions",
+    bullets: [
+      "YouTube analytics platform + content scheduling tools",
+      "Marketplace parsing system with captcha solving, autobuy, extension + Telegram bots",
+      "Delivered multiple browser extensions for recurring clients"
+    ],
+    stack: "Express · React-Admin · Supabase · Selenium · MongoDB · Grammy"
+  },
+  {
+    when: "2018 — 2020",
+    co: "uVPN",
+    role: "Assistant Project Manager",
+    tag: "VPN product",
+    bullets: [
+      "Worked with devs, DevOps, and external providers to ship VPN features",
+      "Grew traffic and user engagement"
+    ],
+    stack: ""
+  },
+  {
+    when: "2015 — 2020",
+    co: "YouTube",
+    role: "Self-employed creator",
+    tag: "70K subscribers · 100M views",
+    bullets: [
+      "A hobby that grew into a full-time channel of 70K+ subs and 100M total views",
+      "Taught me shipping, schedules, and systems — all transferable to engineering"
+    ],
+    stack: ""
+  }
+];
+
+/* ------- RENDER TIMELINE ------- */
+const tl = document.getElementById('timeline');
+JOBS.forEach((j, i) => {
+  const el = document.createElement('div');
+  el.className = 'job' + (i === 0 ? ' open' : '');
+  el.innerHTML = `
+    <div class="when">${j.when}</div>
+    <div class="body">
+      <div class="co">${j.co}</div>
+      <div class="role">${j.role} <span class="tag">· ${j.tag}</span></div>
+      <ul>${j.bullets.map(b => `<li>${b}</li>`).join('')}</ul>
+      ${j.stack ? `<div class="stack">${j.stack}</div>` : ''}
+    </div>
+    <div class="chev">›</div>
+  `;
+  el.addEventListener('click', () => el.classList.toggle('open'));
+  tl.appendChild(el);
+});
+
+/* ------- COMMAND PALETTE ------- */
+const commands = [
+  { name: "Jump: About", k: "G A", do: () => jumpTo('about') },
+  { name: "Jump: Experience", k: "G E", do: () => jumpTo('experience') },
+  { name: "Jump: Stack", k: "G S", do: () => jumpTo('stack') },
+  { name: "Jump: Contact", k: "G C", do: () => jumpTo('contact') },
+  { name: "Email me@yuron.dev", k: "↗", do: () => location.href = 'mailto:me@yuron.dev' },
+  { name: "Open old site (yuron.dev)", k: "↗", do: () => window.open('https://yuron.dev', '_blank') },
+  { name: "Copy email address", k: "C", do: async () => { await navigator.clipboard.writeText('me@yuron.dev'); toast('Email copied'); } },
+  { name: "Theme: paper", k: "T P", do: () => setTweak('theme', 'paper') },
+  { name: "Theme: cosmos", k: "T C", do: () => setTweak('theme', 'cosmos') },
+  { name: "Theme: terminal", k: "T T", do: () => setTweak('theme', 'terminal') },
+  { name: "Theme: brutal", k: "T B", do: () => setTweak('theme', 'brutal') },
+  { name: "Accent: rust", k: "A R", do: () => setTweak('accent', 'rust') },
+  { name: "Accent: moss", k: "A M", do: () => setTweak('accent', 'moss') },
+  { name: "Accent: indigo", k: "A I", do: () => setTweak('accent', 'indigo') },
+  { name: "Accent: ink (mono)", k: "A K", do: () => setTweak('accent', 'ink') },
+  { name: "Expand all experience", k: "E", do: () => document.querySelectorAll('.job').forEach(j => j.classList.add('open')) },
+  { name: "Collapse all experience", k: "X", do: () => document.querySelectorAll('.job').forEach(j => j.classList.remove('open')) },
+  { name: "Toggle grain texture", k: "G", do: () => setTweak('showGrain', !window.TWEAKS.showGrain) },
+  { name: "Toggle stars & moon", k: "M", do: () => setTweak('showCosmos', !window.TWEAKS.showCosmos) },
+  { name: "Open terminal", k: "`", do: () => window.openTerminal && window.openTerminal() },
+];
+
+function jumpTo(id) {
+  const el = document.getElementById(id);
+  if (el) window.scrollTo({ top: el.offsetTop - 40, behavior: 'smooth' });
+}
+
+let paletteIdx = 0;
+let paletteFiltered = commands.slice();
+
+function openPalette() {
+  document.getElementById('palette').classList.add('on');
+  document.getElementById('palette-input').value = '';
+  document.getElementById('palette-input').focus();
+  paletteIdx = 0;
+  renderPalette('');
+}
+function closePalette() {
+  document.getElementById('palette').classList.remove('on');
+}
+function renderPalette(q) {
+  q = q.toLowerCase().trim();
+  paletteFiltered = q ? commands.filter(c => c.name.toLowerCase().includes(q)) : commands.slice();
+  if (paletteIdx >= paletteFiltered.length) paletteIdx = 0;
+  const host = document.getElementById('palette-results');
+  host.innerHTML = paletteFiltered.map((c, i) => `
+    <div class="item ${i === paletteIdx ? 'active' : ''}" data-i="${i}">
+      <span>${c.name}</span>
+      <span class="k">${c.k}</span>
+    </div>
+  `).join('') || '<div class="item" style="color:var(--ink-muted)">no results</div>';
+  host.querySelectorAll('.item[data-i]').forEach(el => {
+    el.addEventListener('mouseenter', () => { paletteIdx = +el.dataset.i; renderPalette(document.getElementById('palette-input').value); });
+    el.addEventListener('click', () => runPalette());
+  });
+}
+function runPalette() {
+  const c = paletteFiltered[paletteIdx];
+  if (c) { closePalette(); setTimeout(() => c.do(), 40); }
+}
+
+document.getElementById('palette-input').addEventListener('input', e => renderPalette(e.target.value));
+document.getElementById('palette-input').addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown') { e.preventDefault(); paletteIdx = Math.min(paletteIdx + 1, paletteFiltered.length - 1); renderPalette(e.target.value); }
+  if (e.key === 'ArrowUp')   { e.preventDefault(); paletteIdx = Math.max(paletteIdx - 1, 0); renderPalette(e.target.value); }
+  if (e.key === 'Enter')     { e.preventDefault(); runPalette(); }
+  if (e.key === 'Escape')    { e.preventDefault(); closePalette(); }
+});
+document.getElementById('palette').addEventListener('click', e => {
+  if (e.target.id === 'palette') closePalette();
+});
+document.getElementById('palette-btn').addEventListener('click', openPalette);
+
+/* ------- GLOBAL KEYBOARD ------- */
+window.addEventListener('keydown', e => {
+  const inField = ['INPUT','TEXTAREA'].includes(document.activeElement?.tagName);
+  if (inField && e.key !== 'Escape') return;
+  if (e.key === '/' || (e.key === 'k' && (e.metaKey || e.ctrlKey))) {
+    e.preventDefault();
+    openPalette();
+  }
+  if (e.key === 'g') {
+    window.__gPending = true;
+    setTimeout(() => { window.__gPending = false; }, 900);
+    return;
+  }
+  if (window.__gPending) {
+    window.__gPending = false;
+    const map = { a: 'about', e: 'experience', s: 'stack', c: 'contact', h: null };
+    if (e.key in map) { e.preventDefault(); map[e.key] ? jumpTo(map[e.key]) : window.scrollTo({top:0,behavior:'smooth'}); }
+  }
+});
+
+/* ------- TOAST ------- */
+function toast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = `
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    background:var(--ink);color:var(--bg);
+    padding:10px 18px;border-radius:6px;
+    font-family:var(--mono);font-size:12px;
+    z-index:300;box-shadow:0 8px 24px -8px rgba(0,0,0,0.3);
+  `;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 1800);
+}
+
+/* ------- APPLY TWEAKS ------- */
+function applyTweaks() {
+  const t = window.TWEAKS;
+  document.documentElement.dataset.theme = t.theme;
+  document.documentElement.dataset.accent = t.accent;
+  document.body.classList.toggle('no-grain', !t.showGrain);
+  document.body.classList.toggle('no-cosmos', !t.showCosmos);
+  document.getElementById('theme-val').textContent = `${t.theme} · ${t.accent}`;
+  // reflect in tweaks UI
+  document.querySelectorAll('#t-theme .opt').forEach(b => b.classList.toggle('active', b.dataset.v === t.theme));
+  document.querySelectorAll('#t-accent .opt').forEach(b => b.classList.toggle('active', b.dataset.v === t.accent));
+  document.getElementById('t-grain').classList.toggle('on', t.showGrain);
+  document.getElementById('t-cosmos').classList.toggle('on', t.showCosmos);
+}
+
+function setTweak(k, v) {
+  window.TWEAKS[k] = v;
+  applyTweaks();
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [k]: v } }, '*');
+  }
+}
+
+window.toggleTheme = function() {
+  const order = ['paper', 'cosmos', 'terminal', 'brutal'];
+  const next = order[(order.indexOf(window.TWEAKS.theme) + 1) % order.length];
+  setTweak('theme', next);
+};
+
+applyTweaks();
+
+/* ------- TWEAKS PANEL WIRING ------- */
+document.querySelectorAll('#t-theme .opt').forEach(b => b.addEventListener('click', () => setTweak('theme', b.dataset.v)));
+document.querySelectorAll('#t-accent .opt').forEach(b => b.addEventListener('click', () => setTweak('accent', b.dataset.v)));
+document.getElementById('t-grain').addEventListener('click', () => setTweak('showGrain', !window.TWEAKS.showGrain));
+document.getElementById('t-cosmos').addEventListener('click', () => setTweak('showCosmos', !window.TWEAKS.showCosmos));
+
+/* ------- CONTACT FORM ------- */
+const form = document.getElementById('contact-form');
+const submitBtn = document.getElementById('submit-btn');
+const formStatus = document.getElementById('form-status');
+
+function setErr(name, msg) {
+  const el = form.querySelector(`.err[data-for="${name}"]`);
+  if (el) el.textContent = msg || '';
+}
+function clearErrors() {
+  form.querySelectorAll('.err').forEach(e => e.textContent = '');
+}
+function validEmail(s) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s); }
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  clearErrors();
+  const data = {
+    email: form.email.value.trim(),
+    subject: form.subject.value.trim(),
+    message: form.message.value.trim(),
+  };
+  let hasErr = false;
+  if (!validEmail(data.email)) { setErr('email', 'please enter a valid email'); hasErr = true; }
+  if (!data.subject) { setErr('subject', 'subject is required'); hasErr = true; }
+  if (data.message.length < 10) { setErr('message', 'message is too short'); hasErr = true; }
+  if (hasErr) { formStatus.textContent = 'fix errors above.'; formStatus.className = 'form-status err'; return; }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'sending…';
+  formStatus.textContent = 'posting /api/portfolio…';
+  formStatus.className = 'form-status';
+
+  try {
+    const res = await fetch('https://yuron.dev/api/portfolio', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error(`status ${res.status}`);
+    formStatus.textContent = '✓ sent — thanks, i\'ll reply soon.';
+    formStatus.className = 'form-status ok';
+    submitBtn.textContent = 'sent ✓';
+    form.reset();
+    setTimeout(() => { submitBtn.disabled = false; submitBtn.textContent = 'send message →'; }, 2500);
+  } catch (err) {
+    console.error(err);
+    formStatus.textContent = `failed: ${err.message}. try email instead.`;
+    formStatus.className = 'form-status err';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'retry →';
+  }
+});
+
+/* ------- INTERACTIVE TERMINAL ------- */
+(function(){
+  const term = document.getElementById('term');
+  const bar = document.getElementById('term-bar');
+  const body = document.getElementById('term-body');
+  const input = document.getElementById('term-input');
+  const history = [];
+  let histIdx = -1;
+
+  function open() { term.classList.add('open'); setTimeout(() => input.focus(), 250); }
+  function close() { term.classList.remove('open'); input.blur(); }
+  function toggle() { term.classList.contains('open') ? close() : open(); }
+
+  bar.addEventListener('click', toggle);
+
+  function print(txt, cls) {
+    const line = document.createElement('div');
+    line.className = 'term-line' + (cls ? ' ' + cls : '');
+    if (typeof txt === 'string') line.textContent = txt;
+    else line.appendChild(txt);
+    body.appendChild(line);
+    body.scrollTop = body.scrollHeight;
+    return line;
+  }
+  function printHTML(html, cls) {
+    const line = document.createElement('div');
+    line.className = 'term-line' + (cls ? ' ' + cls : '');
+    line.innerHTML = html;
+    body.appendChild(line);
+    body.scrollTop = body.scrollHeight;
+    return line;
+  }
+  function echoCommand(cmd) {
+    printHTML(`<span class="prompt">yuron@dev:~$</span> <span style="color:var(--ink)">${escapeHtml(cmd)}</span>`, 'in');
+  }
+  function escapeHtml(s){ return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  const SECTIONS = ['about','experience','stack','contact'];
+
+  const COMMANDS = {
+    help: {
+      desc: 'show this help',
+      run: () => {
+        const rows = Object.entries(COMMANDS).map(([k, v]) =>
+          `  <span style="color:var(--accent)">${k.padEnd(14)}</span> <span style="color:var(--ink-muted)">${v.desc}</span>`
+        ).join('\n');
+        printHTML(`available commands:\n${rows}\n\ntip: <span style="color:var(--accent)">Tab</span> completes \u00b7 <span style="color:var(--accent)">\u2191\u2193</span> history \u00b7 <span style="color:var(--accent)">\u0300</span> toggle`);
+      }
+    },
+    ls: {
+      desc: 'list sections',
+      run: () => SECTIONS.forEach(s => printHTML(`  <span class="term-link" data-goto="${s}">${s}/</span>`))
+    },
+    goto: {
+      desc: 'goto <section>',
+      run: (args) => {
+        const s = args[0];
+        if (!s) return print('usage: goto <about|experience|stack|contact>', 'err');
+        if (!SECTIONS.includes(s)) return print(`no such section: ${s}`, 'err');
+        const el = document.getElementById(s);
+        if (el) { window.scrollTo({top: el.offsetTop - 40, behavior: 'smooth'}); print(`\u2192 ${s}`, 'ok'); }
+      }
+    },
+    cat: {
+      desc: 'cat <file> (about, skills, cv)',
+      run: (args) => {
+        const f = args[0];
+        if (f === 'about') {
+          print('Yuri Bilyk \u2014 backend developer, 6+ years.');
+          print('Currently: IT Dev Group. Previously: idevone, Hexide Digital, CTS.');
+          print('Before code: 70K-sub YouTube channel. Both taught me shipping.');
+        } else if (f === 'skills' || f === 'stack') {
+          print('TypeScript \u00b7 Node (NestJS, Express, Fastify)');
+          print('PostgreSQL \u00b7 MySQL \u00b7 MongoDB \u00b7 Redis');
+          print('AWS (Lambda, ECS, S3, SQS) \u00b7 Docker \u00b7 Kubernetes');
+          print('RabbitMQ \u00b7 Stripe \u00b7 OAuth \u00b7 Sentry');
+        } else if (f === 'cv' || f === 'cv.pdf') {
+          print('opening cv\u2026', 'ok');
+          window.open('uploads/cv2.pdf', '_blank');
+        } else if (!f) {
+          print('usage: cat <about|skills|cv>', 'err');
+        } else {
+          print(`cat: ${f}: No such file`, 'err');
+        }
+      }
+    },
+    whoami: { desc: 'who am i', run: () => print('yuri_bilyk \u2014 backend developer \u00b7 remote \u00b7 EU') },
+    email:  { desc: 'copy email', run: async () => {
+      try { await navigator.clipboard.writeText('me@yuron.dev'); print('me@yuron.dev \u2014 copied to clipboard', 'ok'); }
+      catch { print('me@yuron.dev', 'ok'); }
+    }},
+    linkedin: { desc: 'open linkedin', run: () => { window.open('https://www.linkedin.com/in/yuri-bilyk/', '_blank'); print('opening linkedin/in/yuri-bilyk\u2026', 'ok'); } },
+    github:   { desc: 'open github', run: () => { window.open('https://github.com/', '_blank'); print('no github link provided yet', 'dim'); } },
+    contact:  { desc: 'jump to contact', run: () => COMMANDS.goto.run(['contact']) },
+    theme: {
+      desc: 'theme <paper|cosmos|terminal|brutal>',
+      run: (args) => {
+        const t = args[0];
+        if (!['paper','cosmos','terminal','brutal'].includes(t)) return print('usage: theme <paper|cosmos|terminal|brutal>', 'err');
+        setTweak('theme', t); print(`theme \u2192 ${t}`, 'ok');
+      }
+    },
+    accent: {
+      desc: 'accent <rust|moss|indigo|ink>',
+      run: (args) => {
+        const t = args[0];
+        if (!['rust','moss','indigo','ink'].includes(t)) return print('usage: accent <rust|moss|indigo|ink>', 'err');
+        setTweak('accent', t); print(`accent \u2192 ${t}`, 'ok');
+      }
+    },
+    stars: { desc: 'toggle stars & moon', run: () => { setTweak('showCosmos', !window.TWEAKS.showCosmos); print(`stars: ${window.TWEAKS.showCosmos ? 'on' : 'off'}`, 'ok'); } },
+    grain: { desc: 'toggle grain texture', run: () => { setTweak('showGrain', !window.TWEAKS.showGrain); print(`grain: ${window.TWEAKS.showGrain ? 'on' : 'off'}`, 'ok'); } },
+    date:  { desc: 'current time', run: () => print(new Date().toString()) },
+    echo:  { desc: 'echo <text>', run: (args) => print(args.join(' ')) },
+    clear: { desc: 'clear screen', run: () => { body.innerHTML = ''; banner(); } },
+    exit:  { desc: 'close terminal', run: () => close() },
+    sudo:  { desc: 'nice try', run: () => print('[sudo] password for yuri: \npermission denied. this incident will be reported to the moon.', 'err') },
+    moon:  { desc: 'about the moon', run: () => print('that\'s Earth\'s natural satellite. it\'s lovely, thanks for noticing.') },
+    coffee:{ desc: '\u2615', run: () => print('brewing\u2026 \u2615 ok, one double espresso dispatched to your location.', 'ok') },
+  };
+  COMMANDS['rm']    = { desc: 'dangerous', run: (args) => {
+    if (args.join(' ').includes('-rf /')) {
+      print('rm: it is dangerous to operate recursively on \'/\'', 'err');
+      print('rm: use --no-preserve-root to override this failsafe', 'err');
+      print('just kidding. nothing was deleted.', 'dim');
+    } else { print(`rm: missing operand`, 'err'); }
+  }};
+
+  function run(raw) {
+    const cmd = raw.trim();
+    if (!cmd) return;
+    echoCommand(cmd);
+    history.push(cmd); histIdx = history.length;
+    const [name, ...args] = cmd.split(/\s+/);
+    const c = COMMANDS[name];
+    if (c) c.run(args);
+    else print(`command not found: ${name}. type \u2018help\u2019.`, 'err');
+  }
+
+  body.addEventListener('click', e => {
+    const t = e.target.closest('[data-goto]');
+    if (t) COMMANDS.goto.run([t.dataset.goto]);
+  });
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter')      { run(input.value); input.value=''; }
+    else if (e.key === 'ArrowUp')   { e.preventDefault(); if (histIdx > 0) { histIdx--; input.value = history[histIdx] || ''; } }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); if (histIdx < history.length - 1) { histIdx++; input.value = history[histIdx] || ''; } else { histIdx = history.length; input.value = ''; } }
+    else if (e.key === 'Tab')       {
+      e.preventDefault();
+      const cur = input.value;
+      const matches = Object.keys(COMMANDS).filter(k => k.startsWith(cur));
+      if (matches.length === 1) input.value = matches[0] + ' ';
+      else if (matches.length > 1) print(matches.join('  '), 'dim');
+    }
+    else if (e.key === 'Escape')    { close(); }
+    else if (e.key === 'l' && e.ctrlKey) { e.preventDefault(); COMMANDS.clear.run([]); }
+  });
+
+  // Global toggle: backtick
+  window.addEventListener('keydown', e => {
+    const inField = ['INPUT','TEXTAREA'].includes(document.activeElement?.tagName);
+    if (e.key === '`' && !inField) { e.preventDefault(); toggle(); }
+    else if (e.key === '`' && document.activeElement === input) { e.preventDefault(); close(); }
+  });
+
+  function banner() {
+    printHTML(`<span style="color:var(--accent)">yuron.dev</span> <span style="color:var(--ink-muted)">\u2014 interactive shell v1.0</span>`);
+    print('type \u2018help\u2019 to see commands, or try: ls, goto experience, theme cosmos, cat about', 'dim');
+  }
+  banner();
+
+  window.openTerminal = open;
+})();
+
+/* Subtle parallax on background moon */
+window.addEventListener('scroll', () => {
+  const m = document.getElementById('bg-moon');
+  if (m) m.style.backgroundPosition = `center ${50 + window.scrollY * 0.02}%`;
+}, { passive: true });
+
+/* Mouse parallax on stars (cosmos theme only) */
+document.addEventListener('mousemove', (e) => {
+  if (window.TWEAKS.theme !== 'cosmos' || !window.TWEAKS.showCosmos) return;
+  const x = (e.clientX / window.innerWidth - 0.5) * 12;
+  const y = (e.clientY / window.innerHeight - 0.5) * 12;
+  const l2 = document.querySelector('.cosmos .stars.layer-2');
+  if (l2) l2.style.transform = `translate(${x}px, ${y}px)`;
+});
+
+/* ------- EDIT-MODE HOST PROTOCOL ------- */
+window.addEventListener('message', e => {
+  const d = e.data || {};
+  if (d.type === '__activate_edit_mode') document.getElementById('tweaks').classList.add('on');
+  if (d.type === '__deactivate_edit_mode') document.getElementById('tweaks').classList.remove('on');
+});
+window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+
+</script>
+
+</body>
+</html>
