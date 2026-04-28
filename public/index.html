@@ -63,23 +63,6 @@
   [data-theme="terminal"][data-accent="indigo"] { --accent: #8ea0d4; --accent-soft: #1a1f2f; }
   [data-theme="terminal"][data-accent="ink"]    { --accent: #d7d4c8; --accent-soft: #2a2b26; }
 
-  /* Cosmos theme — deep midnight */
-  [data-theme="cosmos"] {
-    --bg: #0a0c18;
-    --bg-2: #10132a;
-    --ink: #e8e3d0;
-    --ink-soft: #c0bca8;
-    --ink-muted: #7a7a92;
-    --rule: #242846;
-    --rule-soft: #1a1d35;
-    --card: #0f1227;
-    --shadow: 0 0 0 1px #1a1d35, 0 12px 32px -12px rgba(0,0,0,0.7);
-  }
-  [data-theme="cosmos"][data-accent="rust"]   { --accent: #e8a567; --accent-soft: #3a2817; }
-  [data-theme="cosmos"][data-accent="moss"]   { --accent: #a8c088; --accent-soft: #1f2a18; }
-  [data-theme="cosmos"][data-accent="indigo"] { --accent: #a8b5e8; --accent-soft: #1a1f3a; }
-  [data-theme="cosmos"][data-accent="ink"]    { --accent: #e8e3d0; --accent-soft: #2a2d4a; }
-
   /* Brutalist theme */
   [data-theme="brutal"] {
     --bg: #efefe9;
@@ -131,14 +114,13 @@
     color: var(--ink);
     opacity: 0.18;
   }
-  [data-theme="cosmos"] .cosmos .stars { opacity: 0.75; }
-  [data-theme="terminal"] .cosmos .stars { opacity: 0.35; }
+  [data-theme="terminal"] .cosmos .stars { opacity: 0.55; }
   .cosmos .stars.layer-2 {
     background-size: 320px 320px;
     animation: drift 120s linear infinite;
     opacity: 0.35;
   }
-  [data-theme="cosmos"] .cosmos .stars.layer-2 { opacity: 0.9; }
+  [data-theme="terminal"] .cosmos .stars.layer-2 { opacity: 0.6; }
   .cosmos .stars.layer-3 {
     animation: twinkle 5s ease-in-out infinite;
   }
@@ -147,13 +129,8 @@
     to   { transform: translate(-80px, -40px); }
   }
   @keyframes twinkle {
-    0%, 100% { opacity: 0.18; }
-    50%      { opacity: 0.32; }
-  }
-  [data-theme="cosmos"] .cosmos .stars.layer-3 { animation-name: twinkle-cosmos; }
-  @keyframes twinkle-cosmos {
-    0%, 100% { opacity: 0.7; }
-    50%      { opacity: 1; }
+    0%, 100% { opacity: 0.35; }
+    50%      { opacity: 0.6; }
   }
 
   /* Background moon — full viewport */
@@ -168,8 +145,6 @@
     background-repeat: no-repeat;
   }
   [data-theme="terminal"] .bg-moon { opacity: 0.55; mix-blend-mode: screen; filter: contrast(1.05); }
-  [data-theme="cosmos"]   .bg-moon { opacity: 0.55; mix-blend-mode: screen; filter: contrast(1.05); }
-  [data-theme="paper"]    .bg-moon { opacity: 0.18; mix-blend-mode: multiply; filter: contrast(1.1) sepia(0.3); }
   [data-theme="brutal"]   .bg-moon { display: none; }
 
   /* Dark gradient overlay so text stays readable */
@@ -180,12 +155,6 @@
       color-mix(in oklab, var(--bg) 55%, transparent) 0%,
       color-mix(in oklab, var(--bg) 35%, transparent) 45%,
       color-mix(in oklab, var(--bg) 80%, transparent) 100%);
-  }
-  [data-theme="paper"] .bg-moon::after {
-    background: linear-gradient(180deg,
-      color-mix(in oklab, var(--bg) 70%, transparent) 0%,
-      color-mix(in oklab, var(--bg) 50%, transparent) 50%,
-      color-mix(in oklab, var(--bg) 85%, transparent) 100%);
   }
 
   body.no-cosmos .bg-moon { display: none; }
@@ -303,7 +272,7 @@
   @media (max-width: 640px) { .hero-meta { grid-template-columns: repeat(2, 1fr); } }
   .meta-item .label { color: var(--ink-muted); margin-bottom: 4px; text-transform: uppercase; font-size: 10.5px; letter-spacing: 0.08em; }
   .meta-item .val { color: var(--ink); font-size: 13px; }
-  .meta-item .val.accent { color: var(--accent); }
+  .meta-item .val.accent { color: var(--accent); display: inline-flex; align-items: center; gap: 8px; }
 
   /* Section */
   section.blk { margin: 72px 0; }
@@ -673,58 +642,6 @@
     color: var(--ink-muted);
   }
 
-  /* Command palette */
-  .palette-backdrop {
-    position: fixed; inset: 0; background: rgba(27,26,23,0.35);
-    backdrop-filter: blur(4px);
-    display: none; align-items: flex-start; justify-content: center;
-    z-index: 200;
-    padding-top: 12vh;
-  }
-  [data-theme="terminal"] .palette-backdrop { background: rgba(0,0,0,0.6); }
-  .palette-backdrop.on { display: flex; animation: fadein .15s ease; }
-  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
-  .palette {
-    width: min(560px, calc(100vw - 40px));
-    background: var(--bg);
-    border: 1px solid var(--rule);
-    border-radius: 8px;
-    box-shadow: 0 20px 60px -20px rgba(0,0,0,0.4);
-    overflow: hidden;
-    font-family: var(--mono);
-  }
-  [data-theme="brutal"] .palette { border-radius: 0; border-width: 2px; box-shadow: 6px 6px 0 #000; }
-  .palette input {
-    width: 100%;
-    padding: 18px 20px;
-    border: 0;
-    outline: 0;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--mono);
-    font-size: 14px;
-    border-bottom: 1px solid var(--rule-soft);
-  }
-  .palette .results { max-height: 320px; overflow-y: auto; }
-  .palette .item {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 11px 20px;
-    font-size: 13px;
-    color: var(--ink-soft);
-    cursor: pointer;
-    border-left: 2px solid transparent;
-  }
-  .palette .item.active { background: color-mix(in oklab, var(--accent) 10%, transparent); color: var(--ink); border-left-color: var(--accent); }
-  .palette .item .k { color: var(--ink-muted); font-size: 11px; }
-  .palette .hint {
-    padding: 10px 20px;
-    font-size: 10.5px;
-    color: var(--ink-muted);
-    border-top: 1px solid var(--rule-soft);
-    background: var(--bg-2);
-    display: flex; justify-content: space-between;
-  }
-
   /* Tweaks panel */
   .tweaks {
     position: fixed; bottom: 24px; right: 24px;
@@ -789,17 +706,12 @@
 
   <div class="topbar">
     <div class="left">
-      <span class="dot"></span>
-      <span id="status">available for contract work</span>
     </div>
     <div class="right">
       <a href="#experience">experience</a>
       <a href="#stack">stack</a>
       <a href="#contact">contact</a>
       <button onclick="window.toggleTheme()" title="Toggle theme" style="background:none;border:none;cursor:pointer;color:var(--ink-muted);font-family:var(--mono);font-size:12px;padding:4px 8px;">⌘</button>
-      <button id="palette-btn" title="Command palette">
-        <span class="kbd">/</span>
-      </button>
     </div>
   </div>
 
@@ -816,7 +728,7 @@
     </p>
     <div class="hero-meta">
       <div class="meta-item"><div class="label">Based</div><div class="val">Remote · EU</div></div>
-      <div class="meta-item"><div class="label">Status</div><div class="val accent">Open to work</div></div>
+      <div class="meta-item"><div class="label">Status</div><div class="val accent"><span class="dot"></span>Open to work</div></div>
       <div class="meta-item"><div class="label">Years</div><div class="val">6+ commercial</div></div>
       <div class="meta-item"><div class="label">Current</div><div class="val">IT Dev Group</div></div>
     </div>
@@ -988,22 +900,10 @@
   </section>
 
   <footer class="foot">
-    <span>© 2026 Yuri Bilyk</span>
+    <span></span>
     <span>English B2 · Ukrainian (Native)</span>
   </footer>
 
-</div>
-
-<!-- Command palette -->
-<div class="palette-backdrop" id="palette">
-  <div class="palette">
-    <input type="text" id="palette-input" placeholder="Type a command or jump to a section…" autocomplete="off" spellcheck="false" />
-    <div class="results" id="palette-results"></div>
-    <div class="hint">
-      <span>↑↓ navigate · ↵ select · esc close</span>
-      <span>v1.0</span>
-    </div>
-  </div>
 </div>
 
 <!-- Tweaks panel (toolbar-controlled) -->
@@ -1012,8 +912,6 @@
   <div class="row">
     <label>Theme</label>
     <div class="opts" id="t-theme">
-      <button class="opt" data-v="paper">paper</button>
-      <button class="opt" data-v="cosmos">cosmos</button>
       <button class="opt" data-v="terminal">terminal</button>
       <button class="opt" data-v="brutal">brutal</button>
     </div>
@@ -1164,89 +1062,15 @@ JOBS.forEach((j, i) => {
   tl.appendChild(el);
 });
 
-/* ------- COMMAND PALETTE ------- */
-const commands = [
-  { name: "Jump: About", k: "G A", do: () => jumpTo('about') },
-  { name: "Jump: Experience", k: "G E", do: () => jumpTo('experience') },
-  { name: "Jump: Stack", k: "G S", do: () => jumpTo('stack') },
-  { name: "Jump: Contact", k: "G C", do: () => jumpTo('contact') },
-  { name: "Email me@yuron.dev", k: "↗", do: () => location.href = 'mailto:me@yuron.dev' },
-  { name: "Open old site (yuron.dev)", k: "↗", do: () => window.open('https://yuron.dev', '_blank') },
-  { name: "Copy email address", k: "C", do: async () => { await navigator.clipboard.writeText('me@yuron.dev'); toast('Email copied'); } },
-  { name: "Theme: paper", k: "T P", do: () => setTweak('theme', 'paper') },
-  { name: "Theme: cosmos", k: "T C", do: () => setTweak('theme', 'cosmos') },
-  { name: "Theme: terminal", k: "T T", do: () => setTweak('theme', 'terminal') },
-  { name: "Theme: brutal", k: "T B", do: () => setTweak('theme', 'brutal') },
-  { name: "Accent: rust", k: "A R", do: () => setTweak('accent', 'rust') },
-  { name: "Accent: moss", k: "A M", do: () => setTweak('accent', 'moss') },
-  { name: "Accent: indigo", k: "A I", do: () => setTweak('accent', 'indigo') },
-  { name: "Accent: ink (mono)", k: "A K", do: () => setTweak('accent', 'ink') },
-  { name: "Expand all experience", k: "E", do: () => document.querySelectorAll('.job').forEach(j => j.classList.add('open')) },
-  { name: "Collapse all experience", k: "X", do: () => document.querySelectorAll('.job').forEach(j => j.classList.remove('open')) },
-  { name: "Toggle grain texture", k: "G", do: () => setTweak('showGrain', !window.TWEAKS.showGrain) },
-  { name: "Toggle stars & moon", k: "M", do: () => setTweak('showCosmos', !window.TWEAKS.showCosmos) },
-  { name: "Open terminal", k: "`", do: () => window.openTerminal && window.openTerminal() },
-];
-
 function jumpTo(id) {
   const el = document.getElementById(id);
   if (el) window.scrollTo({ top: el.offsetTop - 40, behavior: 'smooth' });
 }
 
-let paletteIdx = 0;
-let paletteFiltered = commands.slice();
-
-function openPalette() {
-  document.getElementById('palette').classList.add('on');
-  document.getElementById('palette-input').value = '';
-  document.getElementById('palette-input').focus();
-  paletteIdx = 0;
-  renderPalette('');
-}
-function closePalette() {
-  document.getElementById('palette').classList.remove('on');
-}
-function renderPalette(q) {
-  q = q.toLowerCase().trim();
-  paletteFiltered = q ? commands.filter(c => c.name.toLowerCase().includes(q)) : commands.slice();
-  if (paletteIdx >= paletteFiltered.length) paletteIdx = 0;
-  const host = document.getElementById('palette-results');
-  host.innerHTML = paletteFiltered.map((c, i) => `
-    <div class="item ${i === paletteIdx ? 'active' : ''}" data-i="${i}">
-      <span>${c.name}</span>
-      <span class="k">${c.k}</span>
-    </div>
-  `).join('') || '<div class="item" style="color:var(--ink-muted)">no results</div>';
-  host.querySelectorAll('.item[data-i]').forEach(el => {
-    el.addEventListener('mouseenter', () => { paletteIdx = +el.dataset.i; renderPalette(document.getElementById('palette-input').value); });
-    el.addEventListener('click', () => runPalette());
-  });
-}
-function runPalette() {
-  const c = paletteFiltered[paletteIdx];
-  if (c) { closePalette(); setTimeout(() => c.do(), 40); }
-}
-
-document.getElementById('palette-input').addEventListener('input', e => renderPalette(e.target.value));
-document.getElementById('palette-input').addEventListener('keydown', e => {
-  if (e.key === 'ArrowDown') { e.preventDefault(); paletteIdx = Math.min(paletteIdx + 1, paletteFiltered.length - 1); renderPalette(e.target.value); }
-  if (e.key === 'ArrowUp')   { e.preventDefault(); paletteIdx = Math.max(paletteIdx - 1, 0); renderPalette(e.target.value); }
-  if (e.key === 'Enter')     { e.preventDefault(); runPalette(); }
-  if (e.key === 'Escape')    { e.preventDefault(); closePalette(); }
-});
-document.getElementById('palette').addEventListener('click', e => {
-  if (e.target.id === 'palette') closePalette();
-});
-document.getElementById('palette-btn').addEventListener('click', openPalette);
-
 /* ------- GLOBAL KEYBOARD ------- */
 window.addEventListener('keydown', e => {
   const inField = ['INPUT','TEXTAREA'].includes(document.activeElement?.tagName);
   if (inField && e.key !== 'Escape') return;
-  if (e.key === '/' || (e.key === 'k' && (e.metaKey || e.ctrlKey))) {
-    e.preventDefault();
-    openPalette();
-  }
   if (e.key === 'g') {
     window.__gPending = true;
     setTimeout(() => { window.__gPending = false; }, 900);
@@ -1299,7 +1123,7 @@ function setTweak(k, v) {
 }
 
 window.toggleTheme = function() {
-  const order = ['paper', 'cosmos', 'terminal', 'brutal'];
+  const order = ['terminal', 'brutal'];
   const next = order[(order.indexOf(window.TWEAKS.theme) + 1) % order.length];
   setTweak('theme', next);
 };
@@ -1461,10 +1285,10 @@ form.addEventListener('submit', async (e) => {
     github:   { desc: 'open github', run: () => { window.open('https://github.com/', '_blank'); print('no github link provided yet', 'dim'); } },
     contact:  { desc: 'jump to contact', run: () => COMMANDS.goto.run(['contact']) },
     theme: {
-      desc: 'theme <paper|cosmos|terminal|brutal>',
+      desc: 'theme <terminal|brutal>',
       run: (args) => {
         const t = args[0];
-        if (!['paper','cosmos','terminal','brutal'].includes(t)) return print('usage: theme <paper|cosmos|terminal|brutal>', 'err');
+        if (!['terminal','brutal'].includes(t)) return print('usage: theme <terminal|brutal>', 'err');
         setTweak('theme', t); print(`theme \u2192 ${t}`, 'ok');
       }
     },
@@ -1534,7 +1358,7 @@ form.addEventListener('submit', async (e) => {
 
   function banner() {
     printHTML(`<span style="color:var(--accent)">yuron.dev</span> <span style="color:var(--ink-muted)">\u2014 interactive shell v1.0</span>`);
-    print('type \u2018help\u2019 to see commands, or try: ls, goto experience, theme cosmos, cat about', 'dim');
+    print('type \u2018help\u2019 to see commands, or try: ls, goto experience, theme brutal, cat about', 'dim');
   }
   banner();
 
@@ -1547,9 +1371,9 @@ window.addEventListener('scroll', () => {
   if (m) m.style.backgroundPosition = `center ${50 + window.scrollY * 0.02}%`;
 }, { passive: true });
 
-/* Mouse parallax on stars (cosmos theme only) */
+/* Mouse parallax on stars */
 document.addEventListener('mousemove', (e) => {
-  if (window.TWEAKS.theme !== 'cosmos' || !window.TWEAKS.showCosmos) return;
+  if (window.TWEAKS.theme !== 'terminal' || !window.TWEAKS.showCosmos) return;
   const x = (e.clientX / window.innerWidth - 0.5) * 12;
   const y = (e.clientY / window.innerHeight - 0.5) * 12;
   const l2 = document.querySelector('.cosmos .stars.layer-2');
