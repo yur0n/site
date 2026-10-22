@@ -6,7 +6,7 @@ export default {
       return handleContact(request, env);
     }
 
-    if (url.pathname === '/CV_Yuri_Bilyk_Backend_Developer.pdf') {
+    if (url.pathname === '/CV_Yuri_Bilyk_Senior_Backend_Engineer.pdf') {
       return serveCv(env);
     }
 
@@ -43,12 +43,12 @@ async function handleContact(request, env) {
 }
 
 async function serveCv(env) {
-  const object = await env.R2.get('CV_Yuri_Bilyk_Backend_Developer.pdf');
+  const object = await env.R2.get('CV_Yuri_Bilyk_Senior_Backend_Engineer.pdf');
   if (!object) return new Response('Not found', { status: 404 });
   return new Response(object.body, {
     headers: {
       'Content-Type': 'application/pdf',
-      'Content-Disposition': 'inline; filename="CV_Yuri_Bilyk_Backend_Developer.pdf"',
+      'Content-Disposition': 'inline; filename="CV_Yuri_Bilyk_Senior_Backend_Engineer.pdf"',
     },
   });
 }
